@@ -140,6 +140,10 @@ Token scan_token() {
 
   if (c == ',')
     return create_token(TOKEN_COMMA, 0);
+  if (c == '[')
+    return create_token(TOKEN_LEFT_BRACKET, 0);
+  if (c == ']')
+    return create_token(TOKEN_RIGHT_BRACKET, 0);
   if (is_digit(c))
     return create_int(c);
   if (is_alpha(c))

@@ -41,9 +41,36 @@ void compile_byte(u8 x) {
   parser.next_byte += 1;
 }
 
+void parse_ram_write() {
+  consume();
+  Token address = expect(TOKEN_REGISTER, "Expected RAM address register");
+  expect(TOKEN_RIGHT_BRACKET, "Expected closing bracket");
+  expect(TOKEN_COMMA, "Expected comma after RAM address");
+  Token value = expect(TOKEN_REGISTER, "Expected RAM value register");
+  if (address.value != 2 || value.value != 1) {
+    printf("Error on line %d: RAM write requires mov [reg2], reg1.\n", address.line);
+    exit(1);
+  }
+  compile_byte(0b11000001);
+}
 void parse_move() {
+  if (peek().type == TOKEN_LEFT_BRACKET) {
+    parse_ram_write();
+    return;
+  }
   Token regis = expect(TOKEN_REGISTER, "You can only move into a register");
   expect(TOKEN_COMMA, "Expected comma");
+  if (peek().type == TOKEN_LEFT_BRACKET) {
+    consume();
+    Token address = expect(TOKEN_REGISTER, "Expected RAM address register");
+    expect(TOKEN_RIGHT_BRACKET, "Expected closing bracket");
+    if (regis.value != 1 || address.value != 2) {
+      printf("Error on line %d: RAM read requires mov reg1, [reg2].\n", regis.line);
+      exit(1);
+    }
+    compile_byte(0b11000000);
+    return;
+  }
   Token rhs = consume();
 
   // compile loading constant into register 1

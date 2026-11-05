@@ -6,6 +6,8 @@ typedef enum {
   TOKEN_MOV,
   TOKEN_NOT,
   TOKEN_COMMA,
+  TOKEN_LEFT_BRACKET,
+  TOKEN_RIGHT_BRACKET,
   TOKEN_EOF,
 } TokenType;
 
