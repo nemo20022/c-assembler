@@ -114,11 +114,45 @@ void parse_not() {
   compile_byte((u8)(0x40 | (destination.value << 3) | 5));
 }
 
+void parse_alu(Token instruction) {
+  Token first = expect(TOKEN_REGISTER, "Expected first source register");
+  expect(TOKEN_COMMA, "Expected comma after first source register");
+  Token second = expect(TOKEN_REGISTER, "Expected second source register");
+  expect(TOKEN_COMMA, "Expected comma after second source register");
+  Token destination = expect(TOKEN_REGISTER, "Expected destination register");
+  int operation;
+
+  if (first.value != 1 || second.value != 2) {
+    printf("Error on line %d: ALU sources must be reg1 and reg2.\n", instruction.line);
+    exit(1);
+  }
+
+  switch (instruction.type) {
+    case TOKEN_OR: operation = 0; break;
+    case TOKEN_ADD: operation = 1; break;
+    case TOKEN_SUB: operation = 2; break;
+    case TOKEN_NAND: operation = 3; break;
+    case TOKEN_AND: operation = 4; break;
+    case TOKEN_XOR: operation = 6; break;
+    case TOKEN_EQ: operation = 7; break;
+    default:
+      printf("Error on line %d: Unknown ALU instruction.\n", instruction.line);
+      exit(1);
+  }
+
+  compile_byte((u8)(0b01000000 | (destination.value << 3) | operation));
+}
 void parse_line() {
   Token t = consume();
 
   if (t.type == TOKEN_MOV) {
     parse_move();
+    return;
+  }
+  if (t.type == TOKEN_OR || t.type == TOKEN_ADD || t.type == TOKEN_SUB ||
+      t.type == TOKEN_NAND || t.type == TOKEN_AND || t.type == TOKEN_XOR ||
+      t.type == TOKEN_EQ) {
+    parse_alu(t);
     return;
   }
   if (t.type == TOKEN_NOT) {
