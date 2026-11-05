@@ -76,11 +76,28 @@ void parse_move() {
   exit(1);
 }
 
+void parse_not() {
+  Token destination = expect(TOKEN_REGISTER, "Expected destination register");
+  expect(TOKEN_COMMA, "Expected comma");
+  Token source = expect(TOKEN_REGISTER, "Expected source register");
+
+  if (source.value != 1) {
+    printf("Error on line %d: NOT source must be reg1.\n", source.line);
+    exit(1);
+  }
+
+  compile_byte((u8)(0x40 | (destination.value << 3) | 5));
+}
+
 void parse_line() {
   Token t = consume();
 
   if (t.type == TOKEN_MOV) {
     parse_move();
+    return;
+  }
+  if (t.type == TOKEN_NOT) {
+    parse_not();
     return;
   }
 

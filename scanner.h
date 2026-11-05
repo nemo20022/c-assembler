@@ -4,6 +4,7 @@ typedef enum {
   TOKEN_REGISTER,
   TOKEN_INTEGER,
   TOKEN_MOV,
+  TOKEN_NOT,
   TOKEN_COMMA,
   TOKEN_EOF,
 } TokenType;

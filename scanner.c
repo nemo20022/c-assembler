@@ -113,6 +113,8 @@ Token create_identifier() {
 
   if (is_token_equal_to("mov"))
     return create_token(TOKEN_MOV, 0);
+  if (is_token_equal_to("not"))
+    return create_token(TOKEN_NOT, 0);
   if (is_token_equal_to("reg1"))
     return create_token(TOKEN_REGISTER, 1);
   if (is_token_equal_to("reg2"))
