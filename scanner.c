@@ -62,6 +62,11 @@ Token create_token(TokenType type, int value) {
 void consume_whitespace() {
   while (true) {
     char c = peek_char();
+    if (c == ';') {
+      while (peek_char() != '\n' && peek_char() != '\0')
+        consume_char();
+      continue;
+    }
     if (c != ' ' && c != '\t' && c != '\n' && c != '\r')
       return;
     if (c == '\n')
