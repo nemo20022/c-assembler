@@ -10,14 +10,26 @@ void read_file(char *filename, char **buffer) {
   if (f == NULL) {
     exit(1);
   }
-  fseek(f, 0, SEEK_END);
+  if (fseek(f, 0, SEEK_END) != 0) {
+    fclose(f);
+    exit(1);
+  }
   length = ftell(f);
-  fseek(f, 0, SEEK_SET);
-  *buffer = malloc(length);
-  if (buffer == NULL) {
+  if (length < 0 || fseek(f, 0, SEEK_SET) != 0) {
+    fclose(f);
+    exit(1);
+  }
+  *buffer = malloc((size_t)length + 1);
+  if (*buffer == NULL) {
+    fclose(f);
     exit(2);
   }
-  fread(*buffer, 1, length, f);
+  if (fread(*buffer, 1, (size_t)length, f) != (size_t)length) {
+    free(*buffer);
+    fclose(f);
+    exit(1);
+  }
+  (*buffer)[length] = '\0';
   fclose(f);
 }
 
